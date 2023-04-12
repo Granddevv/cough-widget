@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import CoughItem from "../cough-item";
 import "./style.scss";
 import IconClose from "../../assets/icons/icon_close.svg";
@@ -12,25 +12,7 @@ type CoughWidgetProps = {
 const CoughWidget: React.FC<CoughWidgetProps> = ({ onClose }) => {
   const [coughList, setCoughList] = useState<TCoughInsight[]>([]);
 
-  useEffect(() => {
-    handleLoadCoughData();
-  }, []);
-
-  const handleLoadCoughData = async () => {
-    try {
-      const data = await axios.get(
-        `${process.env.REACT_APP_SERVER_URL}/dummy_cough_events`,
-        {
-          params: { from: "2020-01-01" },
-        }
-      );
-      handleProcessData(data.data);
-    } catch (error) {
-      console.log("error --", error);
-    }
-  };
-
-  const getStatus = (prev: number, after: number) => {
+  const getStatus = useCallback((prev: number, after: number) => {
     if (prev === 0) {
       if (after > 0) {
         return {
@@ -58,29 +40,50 @@ const CoughWidget: React.FC<CoughWidgetProps> = ({ onClose }) => {
     }
 
     return { status: ECoughStatus.GETTING_WORSE, comparison: comparison };
-  };
+  }, []);
 
-  const handleProcessData = (coughData: TCoughData[]) => {
-    const coughList = [];
-    for (let index = 0; index < coughData.length; index++) {
-      const status = getStatus(
-        coughData[index - 1]?.coughs || 0,
-        coughData[index].coughs
+  const handleProcessData = useCallback(
+    (coughData: TCoughData[]) => {
+      const coughList = [];
+      for (let index = 0; index < coughData.length; index++) {
+        const status = getStatus(
+          coughData[index - 1]?.coughs || 0,
+          coughData[index].coughs
+        );
+        coughList.push({
+          coughs: coughData[index].coughs,
+          ...status,
+        });
+      }
+      setCoughList(coughList);
+    },
+    [getStatus]
+  );
+
+  const handleLoadCoughData = useCallback(async () => {
+    try {
+      const data = await axios.get(
+        `${process.env.REACT_APP_SERVER_URL}/dummy_cough_events`,
+        {
+          params: { from: "2020-01-01" },
+        }
       );
-      coughList.push({
-        coughs: coughData[index].coughs,
-        ...status,
-      });
+      handleProcessData(data.data);
+    } catch (error) {
+      console.log("error --", error);
     }
-    setCoughList(coughList);
-  };
+  }, [handleProcessData]);
+
+  useEffect(() => {
+    handleLoadCoughData();
+  }, [handleLoadCoughData]);
 
   return (
     <div className="cough_widget">
       <div className="cough_widget-header">
         <div className="cough_widget-header-wrapper">
           <div className="cough_widget-header-wrapper-action" onClick={onClose}>
-            <img src={IconClose} />
+            <img alt="close" src={IconClose} />
           </div>
           <div className="cough_widget-header-wrapper-title">Insights</div>
           <div

@@ -22,31 +22,31 @@ const CoughItem: React.FC<CoughItemProps> = ({ data }) => {
         </div>
         {data.status === ECoughStatus.MUCH_BETTER && (
           <div className="cough_item-left-alert">
-            <img src={IconMuchBetter} />
+            <img alt="Much Better" src={IconMuchBetter} />
             <span>Much better</span>
           </div>
         )}
         {data.status === ECoughStatus.SOMEWHAT_BETTER && (
           <div className="cough_item-left-alert">
-            <img src={IconSomewhatBetter} />
+            <img alt="Somewhat better" src={IconSomewhatBetter} />
             <span>Somewhat better</span>
           </div>
         )}
         {data.status === ECoughStatus.ABOUT_SAME && (
           <div className="cough_item-left-alert">
-            <img src={IconAboutSame} />
+            <img alt="About the same" src={IconAboutSame} />
             <span>About the same</span>
           </div>
         )}
         {data.status === ECoughStatus.SOMEWHAT_WORSE && (
           <div className="cough_item-left-alert">
-            <img src={IconSomewhatWorse} />
+            <img alt="Somewhat worse" src={IconSomewhatWorse} />
             <span>Somewhat worse</span>
           </div>
         )}
         {data.status === ECoughStatus.GETTING_WORSE && (
           <div className="cough_item-left-alert">
-            <img src={IconGettingWorse} />
+            <img alt="Its getting worse" src={IconGettingWorse} />
             <span>Its getting worse</span>
           </div>
         )}
