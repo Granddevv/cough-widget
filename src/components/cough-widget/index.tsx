@@ -4,17 +4,18 @@ import "./style.scss";
 import IconClose from "../../assets/icons/icon_close.svg";
 import axios from "axios";
 import { ECoughStatus, TCoughData, TCoughInsight } from "../../model";
+import { subDays } from "date-fns";
 
 type CoughWidgetProps = {
   onClose: () => void;
 };
 
 const CoughWidget: React.FC<CoughWidgetProps> = ({ onClose }) => {
-  const [coughList, setCoughList] = useState<TCoughInsight[]>([]);
+  const [coughItem, setCoughItem] = useState<TCoughInsight | null>(null);
 
-  const getStatus = useCallback((prev: number, after: number) => {
-    if (prev === 0) {
-      if (after > 0) {
+  const getStatus = useCallback((average: number, current: number) => {
+    if (current === 0) {
+      if (average > 0) {
         return {
           status: ECoughStatus.MUCH_BETTER,
           comparison: 100,
@@ -22,7 +23,10 @@ const CoughWidget: React.FC<CoughWidgetProps> = ({ onClose }) => {
       }
       return { status: ECoughStatus.ABOUT_SAME, comparison: 0 };
     }
-    const comparison: number = Math.round(((after - prev) / prev) * 100);
+
+    const comparison: number = Math.round(
+      ((average - current) / current) * 100
+    );
     if (comparison >= 50) {
       return {
         status: ECoughStatus.MUCH_BETTER,
@@ -44,18 +48,22 @@ const CoughWidget: React.FC<CoughWidgetProps> = ({ onClose }) => {
 
   const handleProcessData = useCallback(
     (coughData: TCoughData[]) => {
-      const coughList = [];
-      for (let index = 0; index < coughData.length; index++) {
-        const status = getStatus(
-          coughData[index - 1]?.coughs || 0,
-          coughData[index].coughs
-        );
-        coughList.push({
-          coughs: coughData[index].coughs,
-          ...status,
-        });
-      }
-      setCoughList(coughList);
+      const average =
+        coughData.reduce(
+          (acc: number, currentItem: TCoughData, index: number) =>
+            index === coughData.length - 1 ? acc : acc + currentItem.coughs,
+          0
+        ) /
+        (coughData.length - 1);
+
+      const status = getStatus(average, coughData[coughData.length - 1].coughs);
+
+      let coughItem = {
+        coughs: coughData[coughData.length - 1].coughs,
+        ...status,
+      };
+
+      setCoughItem(coughItem);
     },
     [getStatus]
   );
@@ -65,7 +73,11 @@ const CoughWidget: React.FC<CoughWidgetProps> = ({ onClose }) => {
       const data = await axios.get(
         `${process.env.REACT_APP_SERVER_URL}/dummy_cough_events`,
         {
-          params: { from: "2020-01-01" },
+          params: {
+            from: subDays(new Date(), 8),
+            to: new Date(),
+            aggregation: "day",
+          },
         }
       );
       handleProcessData(data.data);
@@ -95,9 +107,7 @@ const CoughWidget: React.FC<CoughWidgetProps> = ({ onClose }) => {
         </div>
       </div>
       <div className="cough_widget-content">
-        {coughList.map((item: TCoughInsight, index: number) => (
-          <CoughItem data={item} key={`key-cough-item-${index}`} />
-        ))}
+        {coughItem && <CoughItem data={coughItem} />}
       </div>
     </div>
   );
