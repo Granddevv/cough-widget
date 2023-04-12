@@ -1,0 +1,50 @@
+.cough_widget {
+  width: 100%;
+  max-width: 390px;
+
+  &-header {
+    background-color: #274c82;
+    padding: 50px 0 20px 0;
+
+    &-wrapper {
+      display: flex;
+      justify-content: center;
+      position: relative;
+
+      &-title {
+        color: #fff;
+        font-size: 20px;
+        line-height: 24px;
+        font-weight: 700;
+        font-family: "Poppins", sans-serif;
+      }
+
+      &-action {
+        position: absolute;
+        left: 16px;
+        top: 5px;
+        cursor: pointer;
+      }
+
+      &-refresh {
+        position: absolute;
+        top: 0px;
+        right: 16px;
+        cursor: pointer;
+        border: 1px solid #fff;
+        color: #fff;
+        border-radius: 20px;
+        padding: 5px 10px;
+        font-size: 10px;
+      }
+    }
+  }
+
+  &-content {
+    padding: 16px;
+    background-color: #f7f7f9;
+    overflow-y: auto;
+    height: 100%;
+    max-height: calc(100vh - 186px);
+  }
+}
