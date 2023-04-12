@@ -1,0 +1,46 @@
+.chart-container {
+  &-much_better {
+    svg {
+      line {
+        stroke: #f08770;
+        stroke-width: 4;
+      }
+    }
+  }
+
+  &-somewhat_better {
+    svg {
+      line {
+        stroke: #fdcd70;
+        stroke-width: 4;
+      }
+    }
+  }
+
+  &-about_same {
+    svg {
+      line {
+        stroke: #a1afc6;
+        stroke-width: 4;
+      }
+    }
+  }
+
+  &-somewhat_worse {
+    svg {
+      line {
+        stroke: #9feab8cc;
+        stroke-width: 4;
+      }
+    }
+  }
+
+  &-getting_worse {
+    svg {
+      line {
+        stroke: #91cdefcc;
+        stroke-width: 4;
+      }
+    }
+  }
+}
