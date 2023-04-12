@@ -14,8 +14,8 @@ const CoughWidget: React.FC<CoughWidgetProps> = ({ onClose }) => {
   const [coughItem, setCoughItem] = useState<TCoughInsight | null>(null);
 
   const getStatus = useCallback((average: number, current: number) => {
-    if (current === 0) {
-      if (average > 0) {
+    if (average === 0) {
+      if (current > 0) {
         return {
           status: ECoughStatus.MUCH_BETTER,
           comparison: 100,
@@ -25,7 +25,7 @@ const CoughWidget: React.FC<CoughWidgetProps> = ({ onClose }) => {
     }
 
     const comparison: number = Math.round(
-      ((average - current) / current) * 100
+      ((current - average) / average) * 100
     );
     if (comparison >= 50) {
       return {
